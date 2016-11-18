@@ -19,7 +19,30 @@ class DbRequest {
         return $connection;
     }
 
+    public function getLogs($end, $start, $sql, $result) {
+        $date = new \DateTime();
+        $format_date = $date->format('Y-m-d H:i:s');
+        $diff = $end - $start;
+
+        $logs = "[REQUEST]: DATE=".$format_date." TIME=".$diff." Query=".$sql."\n";
+
+        if(empty($result)){
+
+            $file = fopen("log/error.log",'a+');
+            $logs .= "ERROR: Check your parameters\n";
+            fwrite($file, $logs);
+            fclose($file);
+
+        } else {
+            $file = fopen('log/request.log','a+');
+            fwrite($file, $logs);
+            fclose($file);
+        }
+    }
+
     public function findById($id) {
+        $start = microtime(true);
+
         $sql = "SELECT * FROM ".$this->table." WHERE id = ".$id;
 
         $stmt = $this->connection()->prepare($sql);
@@ -27,10 +50,16 @@ class DbRequest {
 
         $result = $stmt->fetch();
 
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, $result);
+
         return (object) $result;
     }
 
     public function findAll() {
+        $start = microtime(true);
+
         $sql = "SELECT * FROM ".$this->table." WHERE 1";
 
         $stmt = $this->connection()->prepare($sql);
@@ -40,10 +69,15 @@ class DbRequest {
 
         $results = $stmt->fetchAll();
 
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, $results);
+
         return $results;
     }
 
     public function findBy($array) {
+        $start = microtime(true);
         $keys = array_keys($array);
         $whereStmt = "";
 
@@ -63,10 +97,16 @@ class DbRequest {
 
         $results = $stmt->fetchAll();
 
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, $results);
+
         return $results;
     }
 
     public function sortBy($sort, $param) {
+
+        $start = microtime(true);
 
         if($sort == "ASC") {
             $sql = "SELECT * FROM ".$this->table." WHERE 1 ORDER BY ".$param." ".$sort;
@@ -81,11 +121,15 @@ class DbRequest {
 
         $results = $stmt->fetchAll();
 
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, $results);
+
         return $results;
     }
 
     public function leftJoin($second_table, $first_join_field, $second_join_field, $display_fields) {
-
+        $start = microtime(true);
         $fieldsToDisplay = "";
 
         for ($i = 0; $i < count($display_fields); $i++) {
@@ -104,13 +148,17 @@ class DbRequest {
 
         $results = $stmt->fetchAll();
 
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, $results);
+
         return $results;
     }
 
     //CRUD
 
     public function create($entity) {
-
+        $start = microtime(true);
         $keys = array_keys($entity);
         $columns = "";
         $allValues = "";
@@ -131,11 +179,15 @@ class DbRequest {
         $stmt = $this->connection()->prepare($sql);
         $stmt->execute();
 
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, null);
+
         return "New Entry for table" .$this->table. " Created";
     }
 
     public function update($fieldsToChange, $whereStmts) {
-
+        $start = microtime(true);
         $keys = array_keys($whereStmts);
         $fields_keys = array_keys($fieldsToChange);
 
@@ -164,11 +216,15 @@ class DbRequest {
         $stmt = $this->connection()->prepare($sql);
         $stmt->execute();
 
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, null);
+
         return "One Entry Updated in table " .$this->table;
     }
 
     public function delete($whereStmts) {
-
+        $start = microtime(true);
         $keys = array_keys($whereStmts);
         $whereString = "";
 
@@ -186,11 +242,15 @@ class DbRequest {
         $stmt = $this->connection()->prepare($sql);
         $stmt->execute();
 
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, $result);
+
         return "One Entry Deleted in table " .$this->table;
     }
 
     public function countAll() {
-
+        $start = microtime(true);
         $sql = "SELECT COUNT(*) FROM ".$this->table;
 
         $stmt = $this->connection()->prepare($sql);
@@ -198,11 +258,15 @@ class DbRequest {
 
         $result = $stmt->fetch();
 
-        return $result;
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, $result);
+
+        return (object) $result;
     }
 
     public function isExist($whereStmts) {
-
+        $start = microtime(true);
         $keys = array_keys($whereStmts);
         $whereString = "";
 
@@ -222,6 +286,10 @@ class DbRequest {
 
         $result = $stmt->fetch();
 
-        return $result;
+        $end = microtime(true);
+
+        $this->getLogs($end, $start, $sql, $result);
+
+        return (object) $result;
     }
 }

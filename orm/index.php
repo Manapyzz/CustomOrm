@@ -5,7 +5,7 @@ require_once ('autoload.php');
 $database = new databaseManager\DbTable();
 
 $result = $database->selectTable('movie')
-                    ->findAll();
+                    ->findById(23);
 
 var_dump($result);
 

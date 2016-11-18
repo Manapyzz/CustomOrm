@@ -37,3 +37,5 @@ Just run this in your shell:
 `php command/classGeneratorCommand.php`
 
 Your entity will be generated in the entity folder.
+
+You can check your logs in the logs folder.
