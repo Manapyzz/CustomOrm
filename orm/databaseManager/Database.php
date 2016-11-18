@@ -4,6 +4,8 @@ namespace databaseManager;
 
 class Database {
 
+    #This is an example but make sure to put your database credentials.
+
     protected $db_host = '127.0.0.1';
     protected $db_name = 'customormdb';
     protected $db_user = 'root';

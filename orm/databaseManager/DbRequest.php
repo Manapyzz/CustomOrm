@@ -27,7 +27,7 @@ class DbRequest {
 
         $result = $stmt->fetch();
 
-        return $result;
+        return (object) $result;
     }
 
     public function findAll() {
