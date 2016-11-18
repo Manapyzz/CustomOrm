@@ -38,4 +38,7 @@ Just run this in your shell:
 
 Your entity will be generated in the entity folder.
 
+
+**4) Logs**
+
 You can check your logs in the logs folder.
