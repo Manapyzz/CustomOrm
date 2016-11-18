@@ -107,4 +107,85 @@ class DbRequest {
         return $results;
     }
 
+    //CRUD
+
+    public function create($entity) {
+
+        $keys = array_keys($entity);
+        $columns = "";
+        $allValues = "";
+
+        for($i = 0; $i < count($keys); $i++) {
+
+            if($i != count($keys)-1) {
+                $columns .= "".$keys[$i].",";
+                $allValues .= "'".$entity[$keys[$i]]."',";
+            } else {
+                $columns .= "".$keys[$i]."";
+                $allValues .= "'".$entity[$keys[$i]]."'";
+            }
+        }
+
+        $sql = "INSERT INTO " . $this->table. " (" .$columns.") VALUES (". $allValues.")";
+
+        $stmt = $this->connection()->prepare($sql);
+        $stmt->execute();
+
+        return "New Entry for table" .$this->table. " Created";
+    }
+
+    public function update($fieldsToChange, $whereStmts) {
+
+        $keys = array_keys($whereStmts);
+        $fields_keys = array_keys($fieldsToChange);
+
+        $whereString = "";
+        $fieldsStmt = "";
+
+        for($i = 0; $i < count($keys); $i++) {
+
+            if($i != 0) {
+                $whereString .= " AND ".$keys[$i]."='".$whereStmts[$keys[$i]]."'";
+            } else {
+                $whereString .= $keys[$i]."='".$whereStmts[$keys[$i]]."'";
+            }
+        }
+
+        for($i = 0; $i < count($fields_keys); $i++) {
+            if($i != count($fields_keys)-1) {
+                $fieldsStmt .= $fields_keys[$i]."='".$fieldsToChange[$fields_keys[$i]]."',";
+            } else {
+                $fieldsStmt .= $fields_keys[$i]."='".$fieldsToChange[$fields_keys[$i]]."'";
+            }
+        }
+
+        $sql = "UPDATE ".$this->table." SET ". $fieldsStmt . " WHERE ".$whereString;
+
+        $stmt = $this->connection()->prepare($sql);
+        $stmt->execute();
+
+        return "One Entry Updated in table " .$this->table;
+    }
+
+    public function delete($whereStmts) {
+
+        $keys = array_keys($whereStmts);
+        $whereString = "";
+
+        for($i = 0; $i < count($keys); $i++) {
+
+            if($i != 0) {
+                $whereString .= " AND ".$keys[$i]."='".$whereStmts[$keys[$i]]."'";
+            } else {
+                $whereString .= $keys[$i]."='".$whereStmts[$keys[$i]]."'";
+            }
+        }
+
+        $sql = "DELETE FROM ".$this->table." WHERE ".$whereString;
+
+        $stmt = $this->connection()->prepare($sql);
+        $stmt->execute();
+
+        return "One Entry Deleted in table " .$this->table;
+    }
 }
