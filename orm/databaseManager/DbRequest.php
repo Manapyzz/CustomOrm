@@ -188,4 +188,40 @@ class DbRequest {
 
         return "One Entry Deleted in table " .$this->table;
     }
+
+    public function countAll() {
+
+        $sql = "SELECT COUNT(*) FROM ".$this->table;
+
+        $stmt = $this->connection()->prepare($sql);
+        $stmt->execute();
+
+        $result = $stmt->fetch();
+
+        return $result;
+    }
+
+    public function isExist($whereStmts) {
+
+        $keys = array_keys($whereStmts);
+        $whereString = "";
+
+        for($i = 0; $i < count($keys); $i++) {
+
+            if($i != 0) {
+                $whereString .= " AND ".$keys[$i]."='".$whereStmts[$keys[$i]]."'";
+            } else {
+                $whereString .= $keys[$i]."='".$whereStmts[$keys[$i]]."'";
+            }
+        }
+
+        $sql = "SELECT EXISTS (SELECT * FROM ".$this->table." WHERE ". $whereString;
+
+        $stmt = $this->connection()->prepare($sql);
+        $stmt->execute();
+
+        $result = $stmt->fetch();
+
+        return $result;
+    }
 }

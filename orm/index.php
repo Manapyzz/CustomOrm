@@ -17,7 +17,7 @@ $whereStmts = [
 ];
 
 $result = $database->selectTable('movie')
-                    ->delete($whereStmts);
+                    ->isExist($whereStmts);
 
 var_dump($result);
 
