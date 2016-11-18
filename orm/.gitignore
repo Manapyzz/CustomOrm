@@ -1,0 +1,5 @@
+# Files created by IDE (PHPStorm)
+.idea/
+
+# Config file where you keep your database access
+config.txt
