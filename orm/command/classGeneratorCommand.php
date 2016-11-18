@@ -38,3 +38,5 @@ foreach($results as $result) {
 }
 
 file_put_contents($fileName, $lines);
+
+echo "Class Generated Correctly ! :)\n";
